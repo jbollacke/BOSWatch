@@ -41,7 +41,7 @@ def send_msg_thread():
 
 def onLoad():
 	queue = Queue()
-	thread = Thread()
+	thread = Thread(target=send_msg_thread).start()
 	return
 
 def run(typ,freq,data):
