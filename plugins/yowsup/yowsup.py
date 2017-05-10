@@ -22,51 +22,35 @@ from includes import globalVars
 from includes.helper import wildcardHandler
 from includes.helper import configHandler
 
-def send_msg(sender,password,empfaenger,text):
-	devnull = open(os.devnull, "wb")
-	cmd = 'yowsup-cli demos -l ' + sender + ':' + password + ' -s ' + empfaenger + ' "' + text + '"'
-	subprocess.call(shlex.split(cmd), stdout=devnull, stderr=devnull)
-	logging.debug("Message has been sent to "+ str(empfaenger))
+from Queue import Queue
+from threading import Thread
+
+def send_msg_thread(empfaenger,text):
+	empfaengerList = globalVars.config.get("yowsup", "empfaenger").split(',')
+	sender = globalVars.config.get("yowsup", "sender")
+	password = globalVars.config.get("yowsup", "password")
+
+	while True:
+		text = queue.get()
+		for empfaenger in empfaengerList:
+			devnull = open(os.devnull, "wb")
+			cmd = 'yowsup-cli demos -l ' + sender + ':' + password + ' -s ' + empfaenger + ' "' + text + '"'
+			subprocess.call(shlex.split(cmd), stdout=devnull, stderr=devnull)
+			logging.debug("Message has been sent to "+ str(empfaenger))
+			devnull.close()
 
 def onLoad():
+	queue = Queue()
+	thread = Thread()
 	return
 
 def run(typ,freq,data):
 	try:
 		if configHandler.checkConfig("yowsup"):
-
-			empfaenger = globalVars.config.get("yowsup", "empfaenger")
-			sender = globalVars.config.get("yowsup", "sender")
-			password = globalVars.config.get("yowsup", "password")
-
-
-			if typ == "FMS":
-					text = globalVars.config.get("yowsup","fms_message")
-					text = wildcardHandler.replaceWildcards(text, data)
-					if globalVars.config.get("yowsup", "empfaenger"):
-						for empfaenger in globalVars.config.get("yowsup", "empfaenger").split(','):
-							send_msg(sender,password,empfaenger,text)
-
-			elif typ == "ZVEI":
-					text = globalVars.config.get("yowsup","zvei_message")
-					text = wildcardHandler.replaceWildcards(text, data)
-					if globalVars.config.get("yowsup", "empfaenger"):
-						for empfaenger in globalVars.config.get("yowsup", "empfaenger").split(','):
-							send_msg(sender,password,empfaenger,text)
-			elif typ == "POC":
-				try:
-					text = globalVars.config.get("yowsup","poc_message")
-					text = wildcardHandler.replaceWildcards(text, data)
-					if globalVars.config.get("yowsup", "empfaenger"):
-						for empfaenger in globalVars.config.get("yowsup", "empfaenger").split(','):
-							send_msg(sender,password,empfaenger,text)
-				except:
-					logging.error("Message not send")
-					logging.debug("Message not send")
-					return
-			else:
-				logging.warning("Invalid Typ: %s", typ)
-
+			if typ in ("FMS", "ZVEI", "POC"):
+				text = globalVars.config.get("yowsup",typ.lower()+"_message")
+				text = wildcardHandler.replaceWildcards(text, data)
+				queue.put(text)
 	except:
 		logging.error("unknown error")
 		logging.debug("unknown error", exc_info=True)
