@@ -414,6 +414,8 @@ finally:
 		logging.debug("failed in clean-up routine", exc_info=True)
 
 	finally:
+		logging.debug("unload plugins")
+		pluginLoader.unloadPlugins()
 		# Close Logging
 		logging.debug("close Logging")
 		# Waiting for all Threads to write there logs
