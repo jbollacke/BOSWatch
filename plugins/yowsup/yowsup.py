@@ -31,6 +31,7 @@ def send_msg_thread():
 	password = globalVars.config.get("yowsup", "password")
 
 	while True:
+		logging.debug("waiting for messages")
 		text = queue.get()
 		for empfaenger in empfaengerList:
 			devnull = open(os.devnull, "wb")
