@@ -25,7 +25,7 @@ from includes.helper import configHandler
 from Queue import Queue
 from threading import Thread
 
-def send_msg_thread(empfaenger,text):
+def send_msg_thread():
 	empfaengerList = globalVars.config.get("yowsup", "empfaenger").split(',')
 	sender = globalVars.config.get("yowsup", "sender")
 	password = globalVars.config.get("yowsup", "password")
