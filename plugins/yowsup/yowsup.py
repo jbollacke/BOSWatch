@@ -40,8 +40,6 @@ def send_msg_thread():
 			devnull.close()
 
 def onLoad():
-	queue = Queue()
-	thread = Thread(target=send_msg_thread).start()
 	return
 
 def run(typ,freq,data):
@@ -54,3 +52,6 @@ def run(typ,freq,data):
 	except:
 		logging.error("unknown error")
 		logging.debug("unknown error", exc_info=True)
+
+queue = Queue()
+thread = Thread(target=send_msg_thread).start()
