@@ -51,6 +51,10 @@ def loadPlugins():
 		logging.debug("cannot load plugins", exc_info=True)
 		raise
 
+def unloadPlugins():
+	for plugin in globalVars.pluginList:
+		logging.info(plugin)
+		globalVars.pluginList[plugin].onUnload()
 
 def getPlugins():
 	"""
