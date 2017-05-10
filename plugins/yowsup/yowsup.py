@@ -33,14 +33,23 @@ def send_msg_thread():
 	while True:
 		logging.debug("waiting for messages")
 		text = queue.get()
+		if not text:
+			logging.debug("received end of queue")
+			queue.task_done()
+			return
 		for empfaenger in empfaengerList:
 			devnull = open(os.devnull, "wb")
 			cmd = 'yowsup-cli demos -l ' + sender + ':' + password + ' -s ' + empfaenger + ' "' + text + '"'
 			subprocess.call(shlex.split(cmd), stdout=devnull, stderr=devnull)
 			logging.debug("Message has been sent to "+ str(empfaenger))
 			devnull.close()
+		queue.task_done()
 
 def onLoad():
+	return
+
+def onUnload():
+	queue.put(None)
 	return
 
 def run(typ,freq,data):
