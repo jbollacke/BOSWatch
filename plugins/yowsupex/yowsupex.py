@@ -54,7 +54,6 @@ class Layer(YowInterfaceLayer):
     def onMessage(self, messageProtocolEntity):
         logging.debug("onMessage")
         self.toUpper(messageProtocolEntity)
-        self.toLower(messageProtocolEntity.ack())
         self.toLower(messageProtocolEntity.ack(True))
 
     @ProtocolEntityCallback("receipt")
